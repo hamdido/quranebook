@@ -60,3 +60,4 @@ If you want to learn more about building native executables, please consult http
 ## References
  - [EpubLib](https://github.com/psiegman/epublib)
  - [Calibre](https://calibre-ebook.com/)
+ - [SVG editor](https://editor.method.ac/)
