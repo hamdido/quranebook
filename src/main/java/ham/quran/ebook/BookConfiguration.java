@@ -6,11 +6,5 @@ import org.eclipse.microprofile.config.inject.ConfigProperties;
 
 @ConfigMapping(prefix = "book")
 public interface BookConfiguration {
-    @WithName("author.name")
-    String authorName();
-
-    @WithName("author.surname")
-    String authorSurname();
-
     String version();
 }

@@ -3,76 +3,60 @@ package ham.quran.ebook.resource;
 import ham.quran.ebook.model.Aya;
 import ham.quran.ebook.model.Page;
 import ham.quran.ebook.model.Quran;
-import ham.quran.ebook.model.Toc;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 public class TranslationReader {
     public static final String bismillah = "بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيم";
-    private BufferedReader quran;
-    private BufferedReader translation;
-    private File quranFile;
-    private File translationFile;
     private Quran quranMeta;
     private int ayaCount;
-    public TranslationReader(File quranFile, File translationFile, Quran quranMeta)  {
-       this.quranFile = quranFile;
-       this.translationFile = translationFile;
-       this.quranMeta = quranMeta;
+    private List<Aya> suras;
+    private List<Aya> translations;
+
+    public TranslationReader(File quranFile, File translationFile, Quran quranMeta) throws IOException {
+        this.quranMeta = quranMeta;
+        this.suras = readLines(new BufferedReader(new FileReader(quranFile)));
+        this.translations = readLines(new BufferedReader(new FileReader(translationFile)));
     }
 
     public void read(Page page, Page nextPage) throws IOException {
-        this.quran = new BufferedReader(new FileReader(quranFile));
-        this.translation = new BufferedReader(new FileReader(translationFile));
-        // add first verse
-        addVerse(page);
-        // iterate over the remaining verses until the end of the page (beginning of next page)
-        addRemainingVerses(page, nextPage);
-
-        // add translations
+        addVerses(page, nextPage);
         addTranslations(page);
     }
 
-    private void addTranslations(Page page) throws IOException {
-        String tranlationText = null;
-        for (var aya: page.getAyas()){
-            if(tranlationText == null) {
-                tranlationText  = findLine(translation, aya.getSura() , aya.getIndex());
-            } else {
-                tranlationText  = translation.readLine();
-            }
-
-            aya.setTranslation(tranlationText.split("\\|")[2]);
-        }
-    }
-
-    /** Add remaining verses in the page by reading line by line */
-    private void addRemainingVerses(Page page, Page nextPage) throws IOException {
-        var currentLine = quran.readLine();
-        while (currentLine != null) {
-            var fragments  = currentLine.split("\\|");
-            var sura = Integer.valueOf(fragments[0]);
-            var aya = Integer.valueOf(fragments[1]);
-            var nextLineText = fragments[2];
-            // reach next page aya
-            if(nextPage.getSura() == sura  && nextPage.getAya() == aya){
+    /**
+     * Add verses with original text
+     */
+    private void addVerses(Page page, Page nextPage) throws IOException {
+        var line = findLine(suras, page.getSura(), page.getAya());
+        var position = suras.indexOf(line.get());
+        while (position < suras.size()) {
+            var aya = suras.get(position++);
+            if (nextPage.getSura() == aya.getSura() && nextPage.getAya() == aya.getIndex()) {
                 break;
             }
-            addAya(page, new Aya(aya, sura, nextLineText));
-            currentLine = quran.readLine();
+            addAya(page, aya);
         }
     }
 
-    private void addAya(Page page, Aya aya){
+    private void addTranslations(Page page) throws IOException {
+        for (var aya : page.getAyas()) {
+            findLine(translations, aya.getSura(), aya.getIndex()).ifPresent(trans -> aya.setTranslation(trans.getText()));
+        }
+    }
+
+    private void addAya(Page page, Aya aya) {
         aya.setCount(ayaCount);
-        // mark staring points
         // sura start
         quranMeta.getSuras().stream()
-                .filter( sura -> (sura.getStart()) == aya.getCount())
+                .filter(sura -> (sura.getStart()) == aya.getCount())
                 .findFirst()
                 .ifPresent(sura -> {
                     aya.setSuraStart(sura);
@@ -89,24 +73,21 @@ public class TranslationReader {
         ayaCount++;
     }
 
-    private void addVerse(Page page) throws IOException {
-        var firstAya  = findLine(quran, page.getSura() , page.getAya());
-        var firstAyaText = firstAya.substring(firstAya.lastIndexOf("|") + 1, firstAya.length());
-        addAya(page, new Aya(page.getAya(), page.getSura(), firstAyaText));
+    private Optional<Aya> findLine(List<Aya> suras, Integer sura, Integer aya) throws IOException {
+        return suras.stream().filter(entry -> entry.getIndex() == aya && entry.getSura() == sura).findFirst();
     }
 
-    private String getAyaPattern(Integer sura, Integer aya){
-        return sura + "\\|" + aya + "\\|.+";
-    }
-
-    private String findLine(BufferedReader reader, Integer sura, Integer aya) throws IOException {
+    private ArrayList<Aya> readLines(BufferedReader reader) throws IOException {
+        var allSuras = new ArrayList<Aya>();
         var line = reader.readLine();
-        while(line != null){
-            if(line.startsWith(sura + "|" + aya + "|")) {
-                return line;
-            }
+        while (line != null && !line.isEmpty()) {
+            var fragments = line.split("\\|");
+            var sura = Integer.valueOf(fragments[0]);
+            var aya = Integer.valueOf(fragments[1]);
+            var nextLineText = fragments[2];
+            allSuras.add(new Aya(aya, sura, nextLineText));
             line = reader.readLine();
         }
-        return null;
+        return allSuras;
     }
 }

@@ -3,13 +3,14 @@
     <title>Quran</title>
     <link href="style.css" rel="stylesheet" type="text/css"/>
 </head>
-<body class="calibre" dir="rtl" lang="ar">
-    <div class="pagedata" id="calibre_pb_3">
+<body dir="rtl" lang="ar">
+    <div class="pagedata">
         <small id="loc_page_{page.index}_">Surah({page.sura}) Page({page.index}) Juz({page.juz.index})</small>
     </div>
     {#for aya in page.ayas}
     {#if aya.suraStart != null}
-    <h3 class="sura" id="loc_sura_{aya.sura}">{aya.sura}. {aya.suraStart.tname}</h3>
+    <h4 class="sura" id="loc_sura_{aya.sura}">{aya.sura}. {aya.suraStart.tname}<span dir="ltr"> </h4>
+    <h4 class="sura" dir="ltr">{aya.suraStart.name}<span dir="ltr"> </h4>
     {/if}
     {#if aya.beginning != null}
     <p class="bismillah">بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ</p>
@@ -18,7 +19,7 @@
     {#if aya.beginning == null}
     <span>{aya.text}</span>
     {/if}
-    <span dir="ltr"><small>({aya.index})</small></span>
+    <span dir="ltr" class="smaller"><small>({aya.index})</small></span>
     <p class="trans"><small>{aya.translation}</small></p>
     {/for}
 </body>

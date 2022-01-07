@@ -1,60 +1,59 @@
 .bismillah {
     display: block;
-    font-size: 0.58333em;
-    line-height: 1.2;
+    font-size: 0.75em;
+    line-height: 1.0;
     text-align: center;
     text-indent: 0;
-    margin: 0 0 1em
+    margin: 0
     }
-.calibre {
+body {
     display: block;
     font-size: 1.5em;
     line-height: 1.2;
     padding-left: 0;
     padding-right: 0;
     text-align: right;
-    margin: 0 5pt
+    margin: 0
     }
-.small {
-    display: block;
-    font-size: 0.58333em;
-    line-height: 1.2;
+small {
+    font-size: 0.75em;
     text-indent: 0;
-    margin: 0 0 1em
-    }
-.calibre2 {
-    font-size: 1em
-    }
-.calibre3 {
-    line-height: 1.2
-    }
-.calibre4 {
-    font-size: 0.5em
-    }
-.calibre5 {
-    font-size: 0.85714em
-    }
+    margin: 0em
+}
+
+.small {
+    font-size: 0.75em;
+    text-indent: 0;
+    margin: 0em
+}
+
+.smaller {
+    font-size: 0.50em;
+    text-indent: 0;
+    margin: 0em
+}
+
 .pagedata {
     direction: ltr;
     display: block;
     font-size: 0.5em;
     text-align: right
-    }
+}
 .sura {
     direction: ltr;
     display: block;
-    font-size: 0.66667em;
+    font-size: 0.65em;
     font-weight: bold;
-    line-height: 1.2;
+    line-height: 1.0;
     text-align: center;
-    margin: 0 0 1em
-    }
+    margin: 0 0 0.5em
+}
 .trans {
     direction: ltr;
     display: block;
-    font-size: 0.58333em;
-    line-height: 1.2;
+    font-size: 0.55em;
+    line-height: 1;
     text-align: left;
     text-indent: 0;
-    margin: 0 0 1em
-    }
+    margin: 0
+ }
