@@ -39,6 +39,7 @@ java -jar target/quarkus-app/quarkus-run.jar -d=src/main/resources -l=EN
 ./mvnw package -Dquarkus.package.type=uber-jar
 java -jar target/*-runner.jar
 ```
+Check geerated file quran_en.epub
 
 ## Creating a native executable
 

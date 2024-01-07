@@ -1,0 +1,25 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head><meta charset="UTF-8"/>
+    <title>Quran</title>
+    <link href="style.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <div class="pagedata">
+        <small id="loc_page_{page.index}_">Surah({page.sura}) Page({page.index}) Juz({page.juz.index})</small>
+    </div>
+    {#for aya in page.ayas}
+    {#if aya.suraStart != null}
+    <h4 class="sura" id="loc_sura_{aya.sura}">{aya.sura}. {aya.suraStart.tname}<span dir="ltr"> </h4>
+    <h4 class="sura" dir="ltr">{aya.suraStart.name}<span dir="ltr"> </h4>
+    {/if}
+    {#if aya.beginning != null}
+    <p class="bismillah">بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ</p>
+    <span>{aya.beginning}</span>
+    {/if}
+    {#if aya.beginning == null}
+    <span>{aya.text}<span class="smaller"><small> #{aya.index}</small></span></span>
+    {/if}
+    <p class="trans"><small>{aya.translation}</small></p>
+    {/for}
+</body>
+</html>
