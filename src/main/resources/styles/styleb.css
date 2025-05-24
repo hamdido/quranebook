@@ -1,0 +1,63 @@
+.bismillah {
+    display: block;
+    font-size: 0.75em;
+    line-height: 1.0;
+    text-align: center;
+    text-indent: 0;
+    margin: 0
+    }
+body {
+    display: block;
+    font-size: 1.5em;
+    line-height: 1.2;
+    padding-left: 0;
+    padding-right: 0;
+    text-align: right;
+    margin: 0
+    }
+small {
+    font-size: 0.75em;
+    text-indent: 0;
+    margin: 0em
+}
+
+.small {
+    font-size: 0.75em;
+    text-indent: 0;
+    margin: 0em
+}
+
+.smaller {
+    font-size: 0.50em;
+    text-indent: 0;
+    margin: 0em
+}
+
+.pagedata {
+    direction: ltr;
+    display: block;
+    font-size: 0.5em;
+    text-align: right
+}
+.sura {
+    direction: ltr;
+    display: block;
+    font-size: 0.65em;
+    font-weight: bold;
+    line-height: 1.0;
+    text-align: center;
+    margin: 0 0 0.5em
+}
+.aya {
+    display: block;
+    text-align: right;
+}
+.trans {
+    direction: ltr;
+    display: block;
+    font-size: 0.55em;
+    line-height: 1;
+    text-align: left;
+    text-indent: 0;
+    margin: 0
+ }

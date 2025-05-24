@@ -14,10 +14,10 @@
     {/if}
     {#if aya.beginning != null}
     <p class="bismillah">بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ</p>
-    <span>{aya.beginning}</span>
+    <span class="aya">{aya.beginning}</span>
     {/if}
     {#if aya.beginning == null}
-    <span>{aya.text}<span class="smaller"><small> #{aya.index}</small></span></span>
+    <span class="aya">{aya.text}<span class="smaller"><small> #{aya.index}</small></span></span>
     {/if}
     <p class="trans"><small>{aya.translation}</small></p>
     {/for}

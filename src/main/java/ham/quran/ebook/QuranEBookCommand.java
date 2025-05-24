@@ -39,6 +39,8 @@ public class QuranEBookCommand implements Runnable, QuarkusApplication {
     String resources;
     @Option(names = {"-l", "--lang"}, description = "Language code - e.g. BG", defaultValue = "BG")
     String lang;
+    @Option(names = {"-t", "--test"}, description = "Test mode", defaultValue = "false")
+    boolean testMode;
     @Inject
     private BookConfiguration bookConfiguration;
     @Inject
@@ -50,35 +52,38 @@ public class QuranEBookCommand implements Runnable, QuarkusApplication {
     @Override
     @SneakyThrows
     public void run() {
-        ClassLoader classLoader = getClass().getClassLoader();
         if (!new File(resources).exists()){
             throw new FileNotFoundException("Missing location: " + resources);
         }
 
-        File metaFile = new File(resources + "/data/meta.xml");
-        File quranFile = new File(resources + "/data/quran.txt");
-        File translationFile = new File(resources + "/data/translation_"+ lang.toLowerCase() + ".txt");
+        var metaFile = new File(resources + "/data/meta.xml");
+        var quranFile = new File(resources + "/data/quran.txt");
+        var translationFile = new File(resources + "/data/translation_"+ lang.toLowerCase() + ".txt");
 
         if(!translationFile.exists()) {
             throw new FileNotFoundException("Missing translation: " + translationFile.getAbsolutePath());
         }
 
-        Log.infov("Generation epub book for language[{0}] [{1}], translation [{2}], meta [{3}] ", lang, quranFile.getName(), translationFile.getName(), metaFile.getName());
-        Book book = getEpubBook();
+        Log.infov("Generation epub book for language[{0}] [{1}], translation [{2}], meta [{3}] version[{4}]", lang, quranFile.getName(), translationFile.getName(), metaFile.getName(), bookConfiguration.version());
+        var book = getEpubBook();
         var quranMeta = new XmlMapper().readValue(metaFile, Quran.class);
         var tocBuilder = new TocBuilder();
         var translationReader = new TranslationReader(quranFile, translationFile, quranMeta);
         var pageIterator = new PageIterator(quranMeta);
+        
         Page prevPage = null;
         Map<Integer, Resource> resources = new TreeMap<>();
-        for (int i = 1; i <= 604 && pageIterator.hasNext(); i++) {
+        var totalPages = testMode ? 10 : 604;
+        for (int i = 1; i <= totalPages && pageIterator.hasNext(); i++) {
             var currentPage = pageIterator.next();
             if (prevPage != null) {
                 translationReader.read(prevPage, currentPage);
                 var pageString = ebook.createPage(prevPage);
                 tocBuilder.process(prevPage);
+                
                 Log.debugv("Page [{0}]", pageString);
                 Log.infov("Page [{0}]", i);
+                
                 var resource = new Resource(pageString.getBytes(), "page_" + prevPage.getIndex() + ".html");
                 resources.put(prevPage.getIndex(), resource);
                 book.addResource(resource);
@@ -90,15 +95,14 @@ public class QuranEBookCommand implements Runnable, QuarkusApplication {
         var toc = tocBuilder.getToc();
         toc.getNavigations().forEach(navigation -> {
             var tocReference = new TOCReference("Juz " + navigation.getJuz().getIndex(), resources.get(navigation.getPage()));
-            book.getTableOfContents().addTOCReference(
-                    tocReference);
+            book.getTableOfContents().addTOCReference(tocReference);
             navigation.getChildren().forEach(subnav -> {
                 tocReference.addChildSection(
                         new TOCReference(subnav.getSura().getIndex() + ". " + subnav.getSura().getEname(), resources.get(subnav.getPage())));
             });
         });
 
-        EpubWriter epubWriter = new EpubWriter();
+        var epubWriter = new EpubWriter();
 
         epubWriter.write(book, new FileOutputStream("quran_" + lang.toLowerCase() + ".epub"));
     }
@@ -109,7 +113,8 @@ public class QuranEBookCommand implements Runnable, QuarkusApplication {
         var metadata = book.getMetadata();
         metadata.setTitles(List.of("Quran " + lang.toUpperCase()));
         book.setCoverImage(getResource( resources + "/data/cover.png", "cover.png"));
-        book.getResources().add(getResource(resources + "/styles/style.css", "style.css"));
+        String cssFile = bookConfiguration.style();
+        book.getResources().add(getResource(resources + "/styles/" + cssFile, "style.css"));
         return book;
     }
 

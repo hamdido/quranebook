@@ -1,7 +1,6 @@
 package ham.quran.ebook.model;
 
 import java.util.Iterator;
-import java.util.Optional;
 
 public class PageIterator implements Iterator<Page>{
     private Quran meta;
